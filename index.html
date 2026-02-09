@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Button Challenge</title>
+    <title>The Button Quest</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,6 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -23,27 +22,121 @@
             position: relative;
         }
 
-        h1 {
+        .phase {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .phase.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Phase 0: Welcome Screen */
+        #phase0 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-message {
             color: white;
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            font-size: 3em;
             text-align: center;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            position: absolute;
-            top: 50px;
-            z-index: 10;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in;
         }
 
-        .subtitle {
+        .welcome-subtitle {
             color: rgba(255,255,255,0.9);
-            font-size: 1.2em;
+            font-size: 1.3em;
             text-align: center;
-            position: absolute;
-            top: 120px;
-            z-index: 10;
+            margin-bottom: 50px;
+            animation: fadeIn 1.5s ease-in;
         }
 
-        .button {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .start-button {
+            padding: 25px 60px;
+            font-size: 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            animation: fadeIn 2s ease-in, pulse 2s infinite;
+            transition: transform 0.2s;
+        }
+
+        .start-button:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+            50% { box-shadow: 0 10px 40px rgba(245,87,108,0.6); }
+        }
+
+        /* Phase 1: Torch/Flashlight Game */
+        #phase1 {
+            background: #000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phase-title {
+            position: absolute;
+            top: 30px;
+            color: white;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 100;
+        }
+
+        .torch-button {
+            padding: 15px 35px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            position: absolute;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            user-select: none;
+        }
+
+        .torch-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Phase 2: Repulse/Attract Game */
+        #phase2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phase2-button {
             padding: 20px 40px;
             font-size: 24px;
             font-weight: bold;
@@ -59,69 +152,121 @@
         #noButton {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
-            left: 40%;
-            top: 50%;
-            transform: translate(-50%, -50%);
         }
 
         #yesButton {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
-            left: 60%;
-            top: 50%;
-            transform: translate(-50%, -50%);
         }
 
-        .button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        /* Phase 3: Giant Button */
+        #phase3 {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            align-items: center;
+            justify-content: center;
         }
 
-        #noButton:active {
-            transform: scale(0.95);
+        #giantButton {
+            position: absolute;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1;
         }
 
-        #yesButton:active {
-            transform: scale(0.95);
+        #giantButton:hover {
+            transform: scale(1.02);
+        }
+
+        #tinyButton {
+            position: absolute;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            font-size: 12px;
+            padding: 8px 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 2;
+            user-select: none;
         }
 
         .emoji {
-            font-size: 1.2em;
-            margin-left: 8px;
+            margin-left: 10px;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-                top: 30px;
-            }
-
-            .subtitle {
-                font-size: 1em;
-                top: 90px;
+            .welcome-message {
+                font-size: 2em;
                 padding: 0 20px;
             }
 
-            .button {
-                padding: 15px 30px;
-                font-size: 20px;
+            .welcome-subtitle {
+                font-size: 1em;
+                padding: 0 20px;
+            }
+
+            .start-button {
+                padding: 20px 40px;
+                font-size: 22px;
+            }
+
+            .phase-title {
+                font-size: 1.3em;
+                padding: 0 20px;
+            }
+
+            #giantButton {
+                font-size: 32px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>The Button Challenge 🎮</h1>
-    <p class="subtitle">Try to click both buttons! One runs away, one chases you...</p>
-    
-    <button id="noButton" class="button">No <span class="emoji">😱</span></button>
-    <button id="yesButton" class="button">Yes <span class="emoji">😍</span></button>
+    <!-- Phase 0: Welcome Screen -->
+    <div id="phase0" class="phase active">
+        <h1 class="welcome-message">Welcome to The Button Quest! 🎮</h1>
+        <p class="welcome-subtitle">Can you complete all three challenges?</p>
+        <button class="start-button" onclick="startGame()">Start Adventure ✨</button>
+    </div>
+
+    <!-- Phase 1: Torch Game -->
+    <div id="phase1" class="phase">
+        <h2 class="phase-title">Find the Hidden Button 🔦</h2>
+        <canvas id="torchCanvas"></canvas>
+        <div class="torch-overlay" id="torchOverlay"></div>
+    </div>
+
+    <!-- Phase 2: Repulse/Attract Game -->
+    <div id="phase2" class="phase">
+        <h2 class="phase-title">Catch the "Yes" Button! 😍</h2>
+        <button id="noButton" class="phase2-button">No <span class="emoji">😱</span></button>
+        <button id="yesButton" class="phase2-button">Yes <span class="emoji">😍</span></button>
+    </div>
+
+    <!-- Phase 3: Giant Button -->
+    <div id="phase3" class="phase">
+        <h2 class="phase-title">The Final Challenge: Click "Escape"! 🏃</h2>
+        <button id="giantButton">CLICK ME! <span class="emoji">😈</span></button>
+        <button id="tinyButton">Escape <span class="emoji">🏃</span></button>
+    </div>
 
     <script>
-        const noButton = document.getElementById('noButton');
-        const yesButton = document.getElementById('yesButton');
-        
+        let currentPhase = 0;
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
+        let animationFrame = null;
 
         // Track mouse position
         document.addEventListener('mousemove', (e) => {
@@ -129,105 +274,294 @@
             mouseY = e.clientY;
         });
 
-        // Function to calculate distance between two points
+        // Utility function
         function getDistance(x1, y1, x2, y2) {
             return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
         }
 
-        // Function to move button away from mouse (repulsion)
-        function repelButton() {
-            const buttonRect = noButton.getBoundingClientRect();
-            const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-            const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+        function transitionToPhase(phase) {
+            const current = document.getElementById(`phase${currentPhase}`);
+            const next = document.getElementById(`phase${phase}`);
             
-            const distance = getDistance(mouseX, mouseY, buttonCenterX, buttonCenterY);
-            const repelRadius = 150; // Distance at which repulsion starts
+            current.style.opacity = '0';
+            setTimeout(() => {
+                current.classList.remove('active');
+                next.classList.add('active');
+                setTimeout(() => {
+                    next.style.opacity = '1';
+                }, 50);
+            }, 800);
             
-            if (distance < repelRadius) {
-                // Calculate repulsion vector
-                const angle = Math.atan2(buttonCenterY - mouseY, buttonCenterX - mouseX);
-                const force = (repelRadius - distance) / repelRadius;
+            currentPhase = phase;
+            
+            // Initialize phase-specific logic
+            if (phase === 1) initPhase1();
+            if (phase === 2) initPhase2();
+            if (phase === 3) initPhase3();
+        }
+
+        function startGame() {
+            transitionToPhase(1);
+        }
+
+        // ===== PHASE 1: TORCH GAME =====
+        let phase1Buttons = [];
+        let hiddenButtonIndex = -1;
+
+        function initPhase1() {
+            phase1Buttons = [];
+            const phase1 = document.getElementById('phase1');
+            
+            // Clear any existing buttons
+            const oldButtons = phase1.querySelectorAll('.torch-button');
+            oldButtons.forEach(btn => btn.remove());
+            
+            // Create 10 buttons (1 real, 9 decoys)
+            const numButtons = 10;
+            hiddenButtonIndex = Math.floor(Math.random() * numButtons);
+            
+            for (let i = 0; i < numButtons; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'torch-button';
+                btn.textContent = i === hiddenButtonIndex ? 'Next! ✨' : 'Decoy 🎭';
+                btn.style.left = Math.random() * 80 + 10 + '%';
+                btn.style.top = Math.random() * 70 + 15 + '%';
                 
-                // Move button away
+                btn.addEventListener('click', () => {
+                    if (i === hiddenButtonIndex) {
+                        transitionToPhase(2);
+                    } else {
+                        btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%)';
+                        btn.textContent = 'Wrong! ❌';
+                        setTimeout(() => {
+                            btn.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+                            btn.textContent = 'Decoy 🎭';
+                        }, 500);
+                    }
+                });
+                
+                phase1.appendChild(btn);
+                phase1Buttons.push(btn);
+            }
+            
+            setupTorchEffect();
+        }
+
+        function setupTorchEffect() {
+            const canvas = document.getElementById('torchCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            function drawTorch() {
+                if (currentPhase !== 1) return;
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Fill entire canvas with black
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Create circular "torch" light around cursor
+                const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 120);
+                gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+                gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.5)');
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
+                
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, 120, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalCompositeOperation = 'source-over';
+                
+                requestAnimationFrame(drawTorch);
+            }
+            
+            drawTorch();
+        }
+
+        // ===== PHASE 2: REPULSE/ATTRACT GAME =====
+        let phase2Active = false;
+
+        function initPhase2() {
+            phase2Active = true;
+            const noButton = document.getElementById('noButton');
+            const yesButton = document.getElementById('yesButton');
+            
+            // Reset positions
+            noButton.style.left = '40%';
+            noButton.style.top = '50%';
+            noButton.style.transform = 'translate(-50%, -50%)';
+            
+            yesButton.style.left = '60%';
+            yesButton.style.top = '50%';
+            yesButton.style.transform = 'translate(-50%, -50%)';
+            
+            yesButton.onclick = () => {
+                phase2Active = false;
+                transitionToPhase(3);
+            };
+            
+            noButton.onclick = () => {
+                alert('Nice try! But you need to click "Yes"! 😅');
+            };
+            
+            animatePhase2();
+        }
+
+        function animatePhase2() {
+            if (!phase2Active || currentPhase !== 2) return;
+            
+            const noButton = document.getElementById('noButton');
+            const yesButton = document.getElementById('yesButton');
+            
+            // Repel "No" button
+            const noRect = noButton.getBoundingClientRect();
+            const noCenterX = noRect.left + noRect.width / 2;
+            const noCenterY = noRect.top + noRect.height / 2;
+            const noDistance = getDistance(mouseX, mouseY, noCenterX, noCenterY);
+            
+            if (noDistance < 150) {
+                const angle = Math.atan2(noCenterY - mouseY, noCenterX - mouseX);
+                const force = (150 - noDistance) / 150;
                 const moveDistance = force * 30;
-                let newX = buttonCenterX + Math.cos(angle) * moveDistance;
-                let newY = buttonCenterY + Math.sin(angle) * moveDistance;
                 
-                // Keep button within viewport bounds
-                const margin = 50;
-                newX = Math.max(margin, Math.min(window.innerWidth - margin, newX));
-                newY = Math.max(margin, Math.min(window.innerHeight - margin, newY));
+                let newX = noCenterX + Math.cos(angle) * moveDistance;
+                let newY = noCenterY + Math.sin(angle) * moveDistance;
+                
+                newX = Math.max(50, Math.min(window.innerWidth - 50, newX));
+                newY = Math.max(50, Math.min(window.innerHeight - 50, newY));
                 
                 noButton.style.left = newX + 'px';
                 noButton.style.top = newY + 'px';
                 noButton.style.transform = 'translate(-50%, -50%)';
             }
-        }
-
-        // Function to attract button to mouse
-        function attractButton() {
-            const buttonRect = yesButton.getBoundingClientRect();
-            const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-            const buttonCenterY = buttonRect.top + buttonRect.height / 2;
             
-            const distance = getDistance(mouseX, mouseY, buttonCenterX, buttonCenterY);
-            const attractRadius = 200; // Distance at which attraction starts
+            // Attract "Yes" button
+            const yesRect = yesButton.getBoundingClientRect();
+            const yesCenterX = yesRect.left + yesRect.width / 2;
+            const yesCenterY = yesRect.top + yesRect.height / 2;
+            const yesDistance = getDistance(mouseX, mouseY, yesCenterX, yesCenterY);
             
-            if (distance < attractRadius && distance > 10) {
-                // Calculate attraction vector
-                const angle = Math.atan2(mouseY - buttonCenterY, mouseX - buttonCenterX);
-                const force = (attractRadius - distance) / attractRadius;
-                
-                // Move button toward mouse
+            if (yesDistance < 200 && yesDistance > 10) {
+                const angle = Math.atan2(mouseY - yesCenterY, mouseX - yesCenterX);
+                const force = (200 - yesDistance) / 200;
                 const moveDistance = force * 15;
-                let newX = buttonCenterX + Math.cos(angle) * moveDistance;
-                let newY = buttonCenterY + Math.sin(angle) * moveDistance;
                 
-                // Keep button within viewport bounds
-                const margin = 50;
-                newX = Math.max(margin, Math.min(window.innerWidth - margin, newX));
-                newY = Math.max(margin, Math.min(window.innerHeight - margin, newY));
+                let newX = yesCenterX + Math.cos(angle) * moveDistance;
+                let newY = yesCenterY + Math.sin(angle) * moveDistance;
+                
+                newX = Math.max(50, Math.min(window.innerWidth - 50, newX));
+                newY = Math.max(50, Math.min(window.innerHeight - 50, newY));
                 
                 yesButton.style.left = newX + 'px';
                 yesButton.style.top = newY + 'px';
                 yesButton.style.transform = 'translate(-50%, -50%)';
             }
+            
+            requestAnimationFrame(animatePhase2);
         }
 
-        // Animation loop
-        function animate() {
-            repelButton();
-            attractButton();
-            requestAnimationFrame(animate);
+        // ===== PHASE 3: GIANT BUTTON =====
+        let phase3Active = false;
+
+        function initPhase3() {
+            phase3Active = true;
+            const giantButton = document.getElementById('giantButton');
+            const tinyButton = document.getElementById('tinyButton');
+            
+            // Set giant button to take up most of the screen
+            const margin = 60;
+            giantButton.style.width = (window.innerWidth - margin * 2) + 'px';
+            giantButton.style.height = (window.innerHeight - margin * 2) + 'px';
+            giantButton.style.left = margin + 'px';
+            giantButton.style.top = margin + 'px';
+            
+            // Position tiny button at edge
+            tinyButton.style.left = '20px';
+            tinyButton.style.top = '20px';
+            
+            giantButton.onclick = () => {
+                phase3Active = false;
+                showVictory();
+            };
+            
+            tinyButton.onclick = () => {
+                alert('So close! But this button is impossible to click! 😈');
+            };
+            
+            animatePhase3();
         }
 
-        animate();
+        function animatePhase3() {
+            if (!phase3Active || currentPhase !== 3) return;
+            
+            const tinyButton = document.getElementById('tinyButton');
+            const rect = tinyButton.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const distance = getDistance(mouseX, mouseY, centerX, centerY);
+            
+            if (distance < 200) {
+                const angle = Math.atan2(centerY - mouseY, centerX - mouseX);
+                const force = (200 - distance) / 200;
+                const moveDistance = force * 40;
+                
+                let newX = centerX + Math.cos(angle) * moveDistance;
+                let newY = centerY + Math.sin(angle) * moveDistance;
+                
+                // Keep button near edges only
+                const edgeMargin = 30;
+                newX = Math.max(edgeMargin, Math.min(window.innerWidth - edgeMargin, newX));
+                newY = Math.max(edgeMargin, Math.min(window.innerHeight - edgeMargin, newY));
+                
+                tinyButton.style.left = newX + 'px';
+                tinyButton.style.top = newY + 'px';
+                tinyButton.style.transform = 'translate(-50%, -50%)';
+            }
+            
+            requestAnimationFrame(animatePhase3);
+        }
 
-        // Click handlers
-        noButton.addEventListener('click', () => {
-            alert('Ha! You caught me! 😅 The "No" button didn\'t want to be clicked!');
-        });
-
-        yesButton.addEventListener('click', () => {
-            alert('Yay! The "Yes" button loves you! 💙 It couldn\'t help but come closer!');
-        });
+        function showVictory() {
+            const phase3 = document.getElementById('phase3');
+            phase3.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h1 style="color: white; font-size: 4em; text-shadow: 3px 3px 6px rgba(0,0,0,0.4); animation: fadeIn 1s ease-in;">
+                        🎉 VICTORY! 🎉
+                    </h1>
+                    <p style="color: white; font-size: 1.5em; margin-top: 20px; animation: fadeIn 1.5s ease-in;">
+                        You completed all three challenges!
+                    </p>
+                    <button onclick="location.reload()" style="
+                        margin-top: 40px;
+                        padding: 20px 40px;
+                        font-size: 24px;
+                        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 50px;
+                        cursor: pointer;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                        animation: fadeIn 2s ease-in;
+                    ">Play Again ↻</button>
+                </div>
+            `;
+        }
 
         // Handle window resize
         window.addEventListener('resize', () => {
-            const noRect = noButton.getBoundingClientRect();
-            const yesRect = yesButton.getBoundingClientRect();
-            
-            // Keep buttons within viewport after resize
-            if (noRect.left < 0 || noRect.right > window.innerWidth || 
-                noRect.top < 0 || noRect.bottom > window.innerHeight) {
-                noButton.style.left = '40%';
-                noButton.style.top = '50%';
-            }
-            
-            if (yesRect.left < 0 || yesRect.right > window.innerWidth || 
-                yesRect.top < 0 || yesRect.bottom > window.innerHeight) {
-                yesButton.style.left = '60%';
-                yesButton.style.top = '50%';
+            if (currentPhase === 1) {
+                const canvas = document.getElementById('torchCanvas');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            } else if (currentPhase === 3 && phase3Active) {
+                const giantButton = document.getElementById('giantButton');
+                const margin = 60;
+                giantButton.style.width = (window.innerWidth - margin * 2) + 'px';
+                giantButton.style.height = (window.innerHeight - margin * 2) + 'px';
             }
         });
     </script>
