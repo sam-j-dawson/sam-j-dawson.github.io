@@ -138,12 +138,13 @@
             50% { box-shadow: 0 4px 25px rgba(240, 147, 251, 0.5); }
         }
 
-        #torchCanvas {
-            position: absolute;
+        .torch {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, transparent 80px, rgba(0, 0, 0, 0.9) 150px, rgba(0, 0, 0, 0.95) 100%);
             pointer-events: none;
             z-index: 50;
         }
@@ -263,7 +264,7 @@
     <!-- Phase 1: Torch Game -->
     <div id="phase1" class="phase">
         <h2 class="phase-title">Find the Hidden Button 🔦</h2>
-        <canvas id="torchCanvas"></canvas>
+        <div class="torch"></div>
     </div>
 
     <!-- Phase 2: Repulse/Attract Game -->
@@ -402,64 +403,11 @@
         }
 
         function setupTorchEffect() {
-            const canvas = document.getElementById('torchCanvas');
-            const ctx = canvas.getContext('2d');
+            const torch = document.querySelector('.torch');
             
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            function drawTorch() {
-                if (currentPhase !== 1) return;
-                
-                // Clear canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Fill entire canvas with very dark overlay (almost black)
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Cut out the torch light area to reveal what's underneath
-                const torchRadius = 180;
-                
-                // Create the flashlight effect - we'll draw a gradient that fades from
-                // transparent (revealing room) to black (dark overlay)
-                const gradient = ctx.createRadialGradient(
-                    mouseX, mouseY, 0,
-                    mouseX, mouseY, torchRadius
-                );
-                
-                // Center is transparent (reveals room), edges fade to black
-                gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');           // Fully transparent center
-                gradient.addColorStop(0.6, 'rgba(0, 0, 0, 0)');         // Keep center clear
-                gradient.addColorStop(0.85, 'rgba(0, 0, 0, 0.5)');      // Start fading
-                gradient.addColorStop(1, 'rgba(0, 0, 0, 0.95)');        // Match outer darkness
-                
-                // Use destination-out to "erase" the dark overlay where the torch is
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(mouseX, mouseY, torchRadius, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Add a subtle yellow glow effect on top
-                ctx.globalCompositeOperation = 'source-over';
-                const glowGradient = ctx.createRadialGradient(
-                    mouseX, mouseY, 0,
-                    mouseX, mouseY, torchRadius * 0.7
-                );
-                glowGradient.addColorStop(0, 'rgba(255, 240, 150, 0.15)');
-                glowGradient.addColorStop(0.5, 'rgba(255, 220, 100, 0.08)');
-                glowGradient.addColorStop(1, 'rgba(255, 200, 50, 0)');
-                
-                ctx.fillStyle = glowGradient;
-                ctx.beginPath();
-                ctx.arc(mouseX, mouseY, torchRadius * 0.7, 0, Math.PI * 2);
-                ctx.fill();
-                
-                requestAnimationFrame(drawTorch);
-            }
-            
-            drawTorch();
+            document.addEventListener('mousemove', (e) => {
+                torch.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 0%, transparent 80px, rgba(0, 0, 0, 0.9) 150px, rgba(0, 0, 0, 0.95) 100%)`;
+            });
         }
 
         // ===== PHASE 2: REPULSE/ATTRACT GAME =====
