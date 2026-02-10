@@ -91,7 +91,7 @@
 
         /* Phase 1: Torch/Flashlight Game */
         #phase1 {
-            background: #000;
+            background: linear-gradient(135deg, #8B7355 0%, #6B5344 100%);
             align-items: center;
             justify-content: center;
         }
@@ -103,6 +103,14 @@
             font-size: 1.8em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             z-index: 100;
+        }
+
+        .room-object {
+            position: absolute;
+            font-size: 60px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 5;
         }
 
         .torch-button {
@@ -117,6 +125,17 @@
             color: white;
             user-select: none;
             z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .torch-button.real {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            animation: subtleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes subtleGlow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+            50% { box-shadow: 0 4px 25px rgba(240, 147, 251, 0.5); }
         }
 
         #torchCanvas {
@@ -311,23 +330,59 @@
             phase1Buttons = [];
             const phase1 = document.getElementById('phase1');
             
-            // Clear any existing buttons
+            // Clear any existing content
             const oldButtons = phase1.querySelectorAll('.torch-button');
             oldButtons.forEach(btn => btn.remove());
+            const oldObjects = phase1.querySelectorAll('.room-object');
+            oldObjects.forEach(obj => obj.remove());
             
-            // Create 10 buttons (1 real, 9 decoys)
+            // Add room objects (furniture, plants, etc.)
+            const roomObjects = [
+                { emoji: '🪴', left: '10%', top: '25%' },
+                { emoji: '🪴', left: '85%', top: '30%' },
+                { emoji: '🖼️', left: '20%', top: '15%' },
+                { emoji: '🖼️', left: '70%', top: '20%' },
+                { emoji: '🪑', left: '15%', top: '60%' },
+                { emoji: '🛋️', left: '75%', top: '65%' },
+                { emoji: '📚', left: '8%', top: '75%' },
+                { emoji: '🕯️', left: '50%', top: '20%' },
+                { emoji: '🎨', left: '40%', top: '15%' },
+                { emoji: '🧸', left: '88%', top: '70%' },
+                { emoji: '📺', left: '45%', top: '75%' },
+                { emoji: '🌵', left: '92%', top: '45%' }
+            ];
+            
+            roomObjects.forEach(obj => {
+                const div = document.createElement('div');
+                div.className = 'room-object';
+                div.textContent = obj.emoji;
+                div.style.left = obj.left;
+                div.style.top = obj.top;
+                phase1.appendChild(div);
+            });
+            
+            // Create buttons (1 real, 9 decoys)
             const numButtons = 10;
             hiddenButtonIndex = Math.floor(Math.random() * numButtons);
             
             for (let i = 0; i < numButtons; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'torch-button';
-                btn.textContent = i === hiddenButtonIndex ? 'Next! ✨' : 'Decoy 🎭';
-                btn.style.left = Math.random() * 80 + 10 + '%';
-                btn.style.top = Math.random() * 70 + 15 + '%';
+                
+                const isReal = i === hiddenButtonIndex;
+                if (isReal) {
+                    btn.classList.add('real');
+                    btn.textContent = 'NEXT! ✨';
+                } else {
+                    btn.textContent = 'Decoy 🎭';
+                }
+                
+                // Random position, avoiding edges
+                btn.style.left = Math.random() * 70 + 15 + '%';
+                btn.style.top = Math.random() * 60 + 20 + '%';
                 
                 btn.addEventListener('click', () => {
-                    if (i === hiddenButtonIndex) {
+                    if (isReal) {
                         transitionToPhase(2);
                     } else {
                         btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%)';
@@ -359,33 +414,47 @@
                 // Clear canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Fill entire canvas with pure black
-                ctx.fillStyle = '#000000';
+                // Fill entire canvas with very dark overlay (almost black)
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // Create the torch light effect - yellow/warm light circle
-                const torchRadius = 150;
+                // Cut out the torch light area to reveal what's underneath
+                const torchRadius = 180;
+                
+                // Create the flashlight effect - we'll draw a gradient that fades from
+                // transparent (revealing room) to black (dark overlay)
                 const gradient = ctx.createRadialGradient(
                     mouseX, mouseY, 0,
                     mouseX, mouseY, torchRadius
                 );
                 
-                // Warm yellow light fading to darkness
-                gradient.addColorStop(0, 'rgba(255, 230, 100, 0.95)');      // Bright yellow center
-                gradient.addColorStop(0.3, 'rgba(255, 200, 80, 0.6)');      // Orange-yellow
-                gradient.addColorStop(0.6, 'rgba(200, 150, 50, 0.3)');      // Dimmer orange
-                gradient.addColorStop(0.85, 'rgba(100, 80, 30, 0.1)');      // Very dim
-                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');               // Transparent edge
+                // Center is transparent (reveals room), edges fade to black
+                gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');           // Fully transparent center
+                gradient.addColorStop(0.6, 'rgba(0, 0, 0, 0)');         // Keep center clear
+                gradient.addColorStop(0.85, 'rgba(0, 0, 0, 0.5)');      // Start fading
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0.95)');        // Match outer darkness
                 
-                // Use 'lighter' blend mode to add light to the black background
-                ctx.globalCompositeOperation = 'lighter';
+                // Use destination-out to "erase" the dark overlay where the torch is
+                ctx.globalCompositeOperation = 'destination-out';
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(mouseX, mouseY, torchRadius, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Reset composite operation
+                // Add a subtle yellow glow effect on top
                 ctx.globalCompositeOperation = 'source-over';
+                const glowGradient = ctx.createRadialGradient(
+                    mouseX, mouseY, 0,
+                    mouseX, mouseY, torchRadius * 0.7
+                );
+                glowGradient.addColorStop(0, 'rgba(255, 240, 150, 0.15)');
+                glowGradient.addColorStop(0.5, 'rgba(255, 220, 100, 0.08)');
+                glowGradient.addColorStop(1, 'rgba(255, 200, 50, 0)');
+                
+                ctx.fillStyle = glowGradient;
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, torchRadius * 0.7, 0, Math.PI * 2);
+                ctx.fill();
                 
                 requestAnimationFrame(drawTorch);
             }
