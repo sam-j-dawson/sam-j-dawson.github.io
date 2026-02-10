@@ -116,15 +116,15 @@
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
             user-select: none;
+            z-index: 10;
         }
 
-        .torch-overlay {
+        #torchCanvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
             pointer-events: none;
             z-index: 50;
         }
@@ -245,7 +245,6 @@
     <div id="phase1" class="phase">
         <h2 class="phase-title">Find the Hidden Button 🔦</h2>
         <canvas id="torchCanvas"></canvas>
-        <div class="torch-overlay" id="torchOverlay"></div>
     </div>
 
     <!-- Phase 2: Repulse/Attract Game -->
@@ -357,23 +356,35 @@
             function drawTorch() {
                 if (currentPhase !== 1) return;
                 
+                // Clear canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Fill entire canvas with black
-                ctx.fillStyle = '#000';
+                // Fill entire canvas with pure black
+                ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // Create circular "torch" light around cursor
-                const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 120);
-                gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-                gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.5)');
-                gradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
+                // Create the torch light effect - yellow/warm light circle
+                const torchRadius = 150;
+                const gradient = ctx.createRadialGradient(
+                    mouseX, mouseY, 0,
+                    mouseX, mouseY, torchRadius
+                );
                 
-                ctx.globalCompositeOperation = 'destination-out';
+                // Warm yellow light fading to darkness
+                gradient.addColorStop(0, 'rgba(255, 230, 100, 0.95)');      // Bright yellow center
+                gradient.addColorStop(0.3, 'rgba(255, 200, 80, 0.6)');      // Orange-yellow
+                gradient.addColorStop(0.6, 'rgba(200, 150, 50, 0.3)');      // Dimmer orange
+                gradient.addColorStop(0.85, 'rgba(100, 80, 30, 0.1)');      // Very dim
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');               // Transparent edge
+                
+                // Use 'lighter' blend mode to add light to the black background
+                ctx.globalCompositeOperation = 'lighter';
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
-                ctx.arc(mouseX, mouseY, 120, 0, Math.PI * 2);
+                ctx.arc(mouseX, mouseY, torchRadius, 0, Math.PI * 2);
                 ctx.fill();
+                
+                // Reset composite operation
                 ctx.globalCompositeOperation = 'source-over';
                 
                 requestAnimationFrame(drawTorch);
